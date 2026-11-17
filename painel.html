@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real ou Fake? — Painel do estande</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Newsreader:ital,opsz,wght@1,6..72,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+:root{
+  --bg:#F5F2EC; --ink:#15171C; --muted:#6B6F78; --line:#E6E1D7; --card:#fff;
+  --real:#0EA765; --real-s:#DCF6E9; --fake:#EC3A3A; --fake-s:#FDE4E2;
+  --hl:#FFD43B; --blue:#3557F5; --gold:#F2A900;
+  --spring:cubic-bezier(.2,1.25,.3,1); --out:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:min(1vw,1.78vh)}
+html,body{height:100%;overflow:hidden}
+body{font-family:"DM Sans",system-ui,sans-serif;color:var(--ink);background:var(--bg);display:grid;grid-template-rows:auto 1fr auto;position:relative}
+.bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(rgba(21,23,28,.07) 1px,transparent 1.3px);background-size:2.2rem 2.2rem}
+.blob{position:absolute;border-radius:50%;filter:blur(5rem);opacity:.5;animation:drift 22s ease-in-out infinite alternate}
+.b1{width:40rem;height:40rem;background:#FFE58A;left:-10rem;top:-14rem}
+.b2{width:36rem;height:36rem;background:#B9F0D5;right:-10rem;top:20%;animation-delay:-8s}
+.b3{width:34rem;height:34rem;background:#FFC9C4;left:30%;bottom:-20rem;animation-delay:-14s}
+@keyframes drift{to{transform:translate(8rem,4rem) scale(1.15)}}
+
+/* topo */
+header{display:flex;align-items:center;gap:2rem;padding:1.8rem 2.4rem 1.2rem}
+.brand{font-family:"Bricolage Grotesque";font-weight:800;font-size:3.4rem;letter-spacing:-.03em;line-height:1;display:flex;align-items:baseline;gap:.4rem}
+.brand .r{color:var(--real)}.brand .f{color:var(--fake)}
+.brand .ou{font-family:"Newsreader";font-style:italic;font-weight:600;font-size:.55em;letter-spacing:0}
+.who{border-left:2px solid var(--line);padding-left:1.6rem;line-height:1.3}
+.who b{font-family:"Bricolage Grotesque";font-size:1.5rem;display:block}
+.who span{color:var(--muted);font-size:1.1rem}
+.live{margin-left:auto;display:flex;align-items:center;gap:1.2rem}
+.pill{display:flex;align-items:center;gap:.6rem;padding:.6rem 1.1rem;border-radius:99px;background:#fff;border:2px solid var(--ink);font-weight:700;font-size:1.05rem;letter-spacing:.08em;text-transform:uppercase}
+.pill .dot{width:.8rem;height:.8rem;border-radius:50%;background:var(--fake);animation:blink 1.2s infinite}
+.pill.demo{border-color:#C99A00;background:#FFF4CC;color:#8A6A00}
+.pill.off .dot{background:var(--muted);animation:none}
+@keyframes blink{50%{opacity:.2}}
+.refresh{position:relative;width:3.4rem;height:3.4rem;display:grid;place-items:center}
+.refresh svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.refresh circle{fill:none;stroke-width:3.5}
+.refresh .bg{stroke:var(--line)}.refresh .fg{stroke:var(--ink);stroke-linecap:round}
+.refresh span{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.15rem}
+.refresh.spin svg{animation:spin .8s var(--out)}
+@keyframes spin{to{transform:rotate(270deg)}}
+.clock{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.4rem;letter-spacing:-.02em;min-width:7rem;text-align:right}
+
+/* grade */
+main{display:grid;grid-template-columns:1.28fr 1fr .82fr;gap:1.6rem;padding:0 2.4rem 1.4rem;min-height:0}
+.panel{background:var(--card);border-radius:1.8rem;box-shadow:0 1.6rem 3rem -2rem rgba(30,20,0,.35),0 0 0 1px rgba(0,0,0,.04);padding:1.6rem 1.8rem;display:flex;flex-direction:column;min-height:0;overflow:hidden;position:relative;animation:rise .9s var(--spring) both}
+.panel:nth-child(2){animation-delay:.12s}.side>*:nth-child(1){animation-delay:.24s}.side>*:nth-child(2){animation-delay:.34s}
+@keyframes rise{from{opacity:0;transform:translateY(3rem) scale(.97)}}
+.ph{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:.8rem;flex-shrink:0}
+.ph h2{font-family:"Bricolage Grotesque";font-weight:800;font-size:2rem;letter-spacing:-.02em;white-space:nowrap}
+.ph small{white-space:nowrap;font-size:.95rem;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+
+/* pódio */
+.podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:1rem;margin-bottom:.9rem;flex-shrink:0}
+.pod{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:.4rem;min-width:0}
+.pod .av{width:3.6rem;height:3.6rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:"Bricolage Grotesque";font-weight:800;font-size:1.6rem;border:.3rem solid #fff;box-shadow:0 .5rem 1rem -.4rem rgba(0,0,0,.35)}
+.p1 .av{width:4.3rem;height:4.3rem;font-size:1.7rem}
+.pod .nm{font-weight:700;font-size:1.3rem;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod .col{width:100%;border-radius:1.1rem 1.1rem .4rem .4rem;display:flex;flex-direction:column;align-items:center;padding-top:.4rem;color:#fff;font-family:"Bricolage Grotesque";font-weight:800;transform-origin:bottom;transition:height .8s var(--spring)}
+.pod .col .p{font-size:1.9rem;line-height:1}
+.pod .col .s{font-size:1.15rem;opacity:.95}
+.p1 .col{height:5.4rem;background:linear-gradient(#FFC93C,#F2A900)}
+.p2 .col{height:4.3rem;background:linear-gradient(#A9B4C6,#7F8BA0)}
+.p3 .col{height:3.7rem;background:linear-gradient(#E6A472,#C77B45)}
+.crown{font-size:1.6rem;margin-bottom:-.4rem;animation:float 2.4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-.5rem)}}
+.pod.fresh .av{animation:pop .8s var(--spring)}
+@keyframes pop{from{transform:scale(0) rotate(-40deg)}}
+
+/* listas */
+.list{display:flex;flex-direction:column;gap:.38rem;min-height:0;flex:1;overflow:hidden;position:relative}
+.row{display:flex;align-items:center;gap:1rem;padding:.3rem 1rem;border-radius:.9rem;background:#FAF8F4;border:1.5px solid var(--line);font-size:1.25rem;flex-shrink:0}
+.row .pos{font-family:"Bricolage Grotesque";font-weight:800;width:2.4rem;color:var(--muted)}
+.av-s{width:2.3rem;height:2.3rem;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:1rem;flex-shrink:0}
+.row .nm{font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .sc{font-family:"Bricolage Grotesque";font-weight:800;font-size:1.45rem}
+.row .sc small{font-family:"DM Sans";font-weight:500;font-size:.7em;color:var(--muted);margin-left:.2rem}
+.row.fresh{animation:newRow 2.4s var(--out)}
+@keyframes newRow{0%{background:#FFF0B3;border-color:var(--hl);transform:scale(1.03)}100%{background:#FAF8F4}}
+.empty{color:var(--muted);text-align:center;padding:3rem 1rem;font-size:1.3rem}
+
+/* feed */
+.feed .row{background:#fff}
+.feed .when{font-size:1rem;color:var(--muted);display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feed .meta{flex:1;min-width:0}
+.feed .meta .nm{display:block}
+.hits{display:flex;gap:.2rem;margin-right:.4rem;flex-shrink:0}
+.hits i{width:.55rem;height:.55rem;border-radius:50%;background:var(--line)}
+.hits i.on{background:var(--real)}
+.tagnew{font-size:.8rem;font-weight:800;letter-spacing:.08em;background:var(--fake);color:#fff;padding:.15rem .5rem;border-radius:99px;margin-left:.4rem;vertical-align:middle;animation:blink 1s 4}
+.feed .row.enter{animation:feedIn .9s var(--spring) both}
+@keyframes feedIn{from{opacity:0;transform:translateY(-120%) scale(.9)}}
+.feed .row:nth-child(n+7){opacity:.55}
+.fade-b{position:absolute;left:0;right:0;bottom:0;height:3rem;background:linear-gradient(transparent,#fff);pointer-events:none}
+
+/* coluna lateral */
+.side{display:grid;grid-template-rows:auto 1fr;gap:1.6rem;min-height:0}
+.qr{background:var(--ink);color:#fff;align-items:center;text-align:center;gap:.9rem;padding:1.5rem}
+.qr h3{font-family:"Bricolage Grotesque";font-weight:800;font-size:2rem;line-height:1;letter-spacing:-.02em}
+.qr h3 em{font-style:normal;color:var(--hl)}
+.qr-box{position:relative;background:#fff;border-radius:1.4rem;padding:1rem;width:64%;aspect-ratio:1}
+.qr-box svg{width:100%;height:100%;display:block}
+.qr-box::before{content:"";position:absolute;inset:-.5rem;border-radius:1.8rem;border:.35rem solid transparent;background:conic-gradient(from var(--a),var(--real),var(--hl),var(--fake),var(--blue),var(--real)) border-box;-webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:rot 4s linear infinite}
+@property --a{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes rot{to{--a:360deg}}
+.qr-scan{position:absolute;left:1.1rem;right:1.1rem;height:.35rem;border-radius:99px;background:linear-gradient(90deg,transparent,var(--real),transparent);box-shadow:0 0 1.2rem var(--real);animation:scan 2.6s ease-in-out infinite;top:1.1rem}
+@keyframes scan{50%{top:calc(100% - 1.45rem)}}
+.qr-url{font-size:1.1rem;opacity:.75;word-break:break-all}
+.qr-steps{display:flex;gap:.5rem;font-size:.95rem;opacity:.9}
+.qr-steps span{background:rgba(255,255,255,.1);padding:.35rem .7rem;border-radius:99px;white-space:nowrap}
+
+.stats{gap:1rem;justify-content:center;padding:1.3rem 1.6rem}
+.big{text-align:center}
+.big b{display:block;font-family:"Bricolage Grotesque";font-weight:800;font-size:5.4rem;line-height:1;letter-spacing:-.04em;background:linear-gradient(90deg,var(--real),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.big span{font-size:1.2rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.big.bump b{animation:bump .7s var(--spring)}
+@keyframes bump{40%{transform:scale(1.15)}}
+.minis{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.mini{background:#FAF8F4;border:1.5px solid var(--line);border-radius:1.1rem;padding:.9rem;text-align:center}
+.mini b{display:block;font-family:"Bricolage Grotesque";font-size:2.2rem;line-height:1}
+.mini span{font-size:.95rem;color:var(--muted)}
+
+/* rodapé */
+footer{background:var(--ink);color:#fff;display:flex;align-items:center;overflow:hidden;height:3.6rem}
+.f-tag{background:var(--hl);color:var(--ink);font-family:"Bricolage Grotesque";font-weight:800;font-size:1.3rem;padding:0 1.6rem;height:100%;display:flex;align-items:center;flex-shrink:0;position:relative;z-index:1}
+.ticker{display:flex;white-space:nowrap;animation:tick 60s linear infinite}
+.ticker span{font-size:1.3rem;padding:0 2.4rem;display:flex;align-items:center;gap:.8rem}
+.ticker span::before{content:"◆";color:var(--hl);font-size:.8em}
+@keyframes tick{to{transform:translateX(-50%)}}
+
+/* toast */
+.toast{position:fixed;left:50%;top:1.4rem;transform:translate(-50%,-180%);z-index:30;background:#fff;border:2px solid var(--ink);border-radius:99px;padding:.9rem 1.8rem .9rem 1rem;display:flex;align-items:center;gap:1rem;font-size:1.45rem;box-shadow:0 1.4rem 3rem -1rem rgba(0,0,0,.35);transition:transform .7s var(--spring)}
+.toast.show{transform:translate(-50%,0)}
+.toast .av-s{width:3rem;height:3rem;font-size:1.15rem}
+.toast b{font-family:"Bricolage Grotesque"}
+canvas#fx{position:fixed;inset:0;z-index:25;pointer-events:none;width:100%;height:100%}
+.err{position:fixed;right:2.4rem;bottom:4.6rem;background:var(--fake-s);color:#8a1a1a;border-radius:.8rem;padding:.5rem 1rem;font-size:1rem;display:none}
+</style>
+</head>
+<body>
+<div class="bgfx"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div>
+
+<header>
+  <div class="brand"><span class="r">REAL</span><span class="ou">ou</span><span class="f">FAKE?</span></div>
+  <div class="who"><b id="hGroup"></b><span id="hSchool"></span></div>
+  <div class="live">
+    <div class="pill" id="pill"><span class="dot"></span><span id="pillTxt">Ao vivo</span></div>
+    <div class="refresh" id="refresh" title="Próxima atualização"><svg viewBox="0 0 40 40"><circle class="bg" cx="20" cy="20" r="17"/><circle class="fg" id="rfg" cx="20" cy="20" r="17" stroke-dasharray="106.8" stroke-dashoffset="0"/></svg><span id="rsec">30</span></div>
+    <div class="clock" id="clock">--:--</div>
+  </div>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="ph"><h2>🏆 Ranking</h2><small>Top 10</small></div>
+    <div class="podium" id="podium"></div>
+    <div class="list" id="rank"></div>
+  </section>
+
+  <section class="panel feed">
+    <div class="ph"><h2>⚡ Últimos jogadores</h2><small>ao vivo</small></div>
+    <div class="list" id="feed"></div>
+    <div class="fade-b"></div>
+  </section>
+
+  <div class="side">
+    <section class="panel qr">
+      <h3>Aponte a câmera<br>e <em>jogue agora!</em></h3>
+      <div class="qr-box"><div id="qr"></div><div class="qr-scan"></div></div>
+      <div class="qr-steps"><span>📷 Escaneie</span><span>🏆 Entre no ranking</span></div>
+      <div class="qr-url" id="qrUrl"></div>
+    </section>
+    <section class="panel stats">
+      <div class="big" id="bigTotal"><b id="total">0</b><span>jogadores até agora</span></div>
+      <div class="minis">
+        <div class="mini"><b id="best">0</b><span>recorde</span></div>
+        <div class="mini"><b id="avg">0</b><span>média de pontos</span></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="f-tag">🔎 Antes de compartilhar</div>
+  <div class="ticker" id="ticker"></div>
+</footer>
+
+<div class="toast" id="toast"></div>
+<div class="err" id="err"></div>
+<canvas id="fx"></canvas>
+
+<script>
+/* ===================== CONFIGURAÇÃO ===================== */
+const CONFIG = {
+  // Endereço da API que devolve o ranking (GET). Vazio = modo demonstração.
+  // Formatos aceitos: [ {name, score, hits, ts}, ... ]  ou  { total, ranking:[...] }
+  apiUrl: "https://yqubjyoeycxxslofbbhz.supabase.co/rest/v1/ranking?select=id,name,score,hits,created_at&order=created_at.desc&limit=5000",
+  apiKey: "sb_publishable_uEhPb7JlwLchh8_fFRlGww_WenKIwUb",
+  // Endereço do quiz que vai no QR code
+  quizUrl: "https://real-ou-fake.netlify.app",
+  grupo: "Grupo 2",
+  turma: "9º TA",
+  escola: "Escola Adventista",
+  feira: "Feira de Ciências 2026",
+  intervalo: 30,      // segundos entre atualizações
+  totalPerguntas: 8   // para as bolinhas de acertos
+};
+const DICAS = [
+  "Leia além da manchete","Confira a data da notícia","Procure a mesma notícia em outros sites",
+  "Desconfie de MAIÚSCULAS e “URGENTE”","“Repasse para todos” é sinal de corrente",
+  "Foto antiga pode ser usada fora de contexto","Faça busca reversa da imagem",
+  "Quem é a fonte? Ela existe mesmo?","Número chocante pede checagem","Na dúvida, não compartilhe"
+];
+
+/* ===================== UTILIDADES ===================== */
+const $ = s => document.querySelector(s);
+const COLORS=['#3557F5','#0EA765','#EC3A3A','#F2A900','#7B5CFF','#FF6B3D','#0FA3B1','#D6338C'];
+const colorFor=s=>COLORS[[...String(s)].reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length];
+const initials=s=>String(s).trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase()||'?';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=n=>Math.round(n).toLocaleString('pt-BR');
+const keyOf=r=>r.ts+'|'+r.name;
+function ago(ts){
+  const s=Math.max(0,(Date.now()-ts)/1000|0);
+  if(s<45) return 'agora mesmo'; const m=s/60|0;
+  if(m<60) return `há ${m||1} min`; const h=m/60|0;
+  if(h<24) return `há ${h} h`; return `há ${h/24|0} d`;
+}
+function countTo(el,a,b,ms=1200){
+  const t0=performance.now();
+  const f=now=>{const p=Math.min(1,(now-t0)/ms),e=1-Math.pow(1-p,3);el.textContent=fmt(a+(b-a)*e);if(p<1)requestAnimationFrame(f)};
+  requestAnimationFrame(f);
+}
+
+/* ===================== DADOS ===================== */
+let DATA=[], seen=new Set(), first=true, demo=!CONFIG.apiUrl;
+const NOMES=['Ana Clara','Pedro H.','Júlia','Davi','Lara','Enzo','Sofia','Miguel','Helena','Arthur','Valentina','Gael','Laura','Heitor','Alice','Theo','Manu','Bernardo','Cecília','Prof. Marcos','Isadora','Lucas','Bia','Gabi','Rafa','Tia Rose'];
+function demoSeed(){
+  const now=Date.now(), arr=[];
+  for(let i=0;i<23;i++){const hits=3+Math.random()*6|0; arr.push({name:NOMES[i%NOMES.length],hits:Math.min(8,hits),score:Math.min(1200,hits*100+Math.random()*hits*45|0),ts:now-(i+1)*(60000+Math.random()*180000)})}
+  return arr;
+}
+function demoTick(){
+  const n=Math.random()<.35?2:1;
+  for(let i=0;i<n;i++){const hits=2+Math.random()*7|0; DATA.push({name:NOMES[Math.random()*NOMES.length|0],hits:Math.min(8,hits),score:Math.min(1200,hits*100+Math.random()*hits*48|0),ts:Date.now()-i*4000})}
+  return DATA;
+}
+async function fetchData(){
+  if(demo){ return DATA.length?demoTick():demoSeed() }
+  const sep=CONFIG.apiUrl.includes('?')?'&':'?';
+  const res=await fetch(CONFIG.apiUrl,{cache:'no-store',headers:CONFIG.apiKey?{apikey:CONFIG.apiKey}:{}});
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  const j=await res.json();
+  const list=Array.isArray(j)?j:(j.ranking||j.jogadores||j.data||[]);
+  return list.map(r=>({name:String(r.name??r.nome??'?').slice(0,20),score:+(r.score??r.pontos??0),hits:r.hits??r.acertos,ts:+(r.ts??r.data??0)||Date.parse(r.created_at)||0}));
+}
+
+/* ===================== RENDER ===================== */
+function render(){
+  const ranking=[...DATA].sort((a,b)=>b.score-a.score||a.ts-b.ts);
+  const recent=[...DATA].sort((a,b)=>b.ts-a.ts).slice(0,9);
+  const fresh=DATA.filter(r=>!seen.has(keyOf(r)));
+  const prevTop=renderPodium.top;
+
+  renderPodium(ranking.slice(0,3), first?new Set():new Set(fresh.map(keyOf)));
+  flip('#rank',()=>{
+    $('#rank').innerHTML = ranking.length>3
+      ? ranking.slice(3,10).map((r,i)=>`<div class="row ${!first&&!seen.has(keyOf(r))?'fresh':''}" data-k="${esc(keyOf(r))}"><span class="pos">${i+4}º</span><span class="av-s" style="background:${colorFor(r.name)}">${esc(initials(r.name))}</span><span class="nm">${esc(r.name)}</span><span class="sc">${fmt(r.score)}<small>pts</small></span></div>`).join('')
+      : (ranking.length?'':'<div class="empty">Ninguém jogou ainda.<br>Seja o primeiro! 🚀</div>');
+  });
+
+  $('#feed').innerHTML = recent.length ? recent.map((r,i)=>{
+    const isNew=!first&&!seen.has(keyOf(r));
+    const pos=ranking.indexOf(r)+1;
+    const dots=r.hits!=null?`<span class="hits">${Array.from({length:CONFIG.totalPerguntas},(_,k)=>`<i class="${k<r.hits?'on':''}"></i>`).join('')}</span>`:'';
+    return `<div class="row ${isNew?'enter':''}" style="animation-delay:${i*90}ms"><span class="av-s" style="background:${colorFor(r.name)}">${esc(initials(r.name))}</span>
+      <span class="meta"><span class="nm">${esc(r.name)}${isNew?'<span class="tagnew">NOVO</span>':''}</span><span class="when">${ago(r.ts)} · ${pos}º lugar</span></span>
+      ${dots}<span class="sc">${fmt(r.score)}<small>pts</small></span></div>`}).join('')
+    : '<div class="empty">Aguardando o primeiro jogador…</div>';
+
+  // números
+  const total=DATA.length, best=ranking[0]?.score||0, avg=total?DATA.reduce((a,r)=>a+r.score,0)/total:0;
+  const prevTotal=+$('#total').dataset.v||0;
+  if(total!==prevTotal){countTo($('#total'),prevTotal,total);$('#total').dataset.v=total;const b=$('#bigTotal');b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')}
+  countTo($('#best'),+$('#best').dataset.v||0,best,900);$('#best').dataset.v=best;
+  countTo($('#avg'),+$('#avg').dataset.v||0,avg,900);$('#avg').dataset.v=Math.round(avg);
+  
+
+  // avisos de novos jogadores
+  if(!first){
+    fresh.sort((a,b)=>a.ts-b.ts).forEach(r=>{
+      const pos=ranking.indexOf(r)+1;
+      queueToast(r, pos===1 ? `<b>${esc(r.name)}</b> é o novo líder com <b>${fmt(r.score)} pts</b>! 👑` : `<b>${esc(r.name)}</b> fez <b>${fmt(r.score)} pts</b> e entrou em <b>${pos}º</b> lugar`, pos===1);
+    });
+  }
+  DATA.forEach(r=>seen.add(keyOf(r)));
+  first=false;
+}
+
+function renderPodium(top,freshKeys){
+  renderPodium.top=top[0]&&keyOf(top[0]);
+  const order=[1,0,2], cls=['p1','p2','p3'];
+  $('#podium').innerHTML=order.map(k=>{
+    const r=top[k];
+    if(!r) return `<div class="pod ${cls[k]}"><div class="av" style="background:#E6E1D7">?</div><div class="nm" style="color:var(--muted)">—</div><div class="col"><span class="p">${k+1}</span></div></div>`;
+    return `<div class="pod ${cls[k]} ${freshKeys.has(keyOf(r))?'fresh':''}">${k===0?'<div class="crown">👑</div>':''}<div class="av" style="background:${colorFor(r.name)}">${esc(initials(r.name))}</div><div class="nm">${esc(r.name)}</div><div class="col"><span class="p">${k+1}</span><span class="s">${fmt(r.score)} pts</span></div></div>`;
+  }).join('');
+}
+
+/* animação de reordenar (FLIP) */
+function flip(sel,update){
+  const box=$(sel), before={};
+  box.querySelectorAll('[data-k]').forEach(el=>before[el.dataset.k]=el.getBoundingClientRect().top);
+  update();
+  box.querySelectorAll('[data-k]').forEach(el=>{
+    const b=before[el.dataset.k]; if(b==null) return;
+    const d=b-el.getBoundingClientRect().top; if(!d) return;
+    el.animate([{transform:`translateY(${d}px)`},{transform:'none'}],{duration:800,easing:'cubic-bezier(.2,1.1,.3,1)'});
+  });
+}
+
+/* ===================== AVISOS ===================== */
+const tq=[]; let tBusy=false;
+function queueToast(r,html,party){tq.push({r,html,party});if(!tBusy)nextToast()}
+function nextToast(){
+  const t=tq.shift(); if(!t){tBusy=false;return} tBusy=true;
+  const el=$('#toast');
+  el.innerHTML=`<span class="av-s" style="background:${colorFor(t.r.name)}">${esc(initials(t.r.name))}</span><span>${t.party?'🎉 ':'⚡ '}${t.html}</span>`;
+  el.classList.add('show'); if(t.party) confetti(220);
+  setTimeout(()=>{el.classList.remove('show');setTimeout(nextToast,700)},4200);
+}
+
+/* ===================== CICLO ===================== */
+let next=0;
+async function refresh(){
+  const rf=$('#refresh'); rf.classList.remove('spin'); void rf.offsetWidth; rf.classList.add('spin');
+  try{
+    DATA=await fetchData();
+    $('#err').style.display='none';
+    setPill(demo?'demo':'live');
+    render();
+  }catch(e){
+    $('#err').textContent='Sem conexão com o servidor — mostrando os últimos dados ('+e.message+')';
+    $('#err').style.display='block'; setPill('off');
+  }
+  next=Date.now()+CONFIG.intervalo*1000;
+}
+function setPill(m){
+  const p=$('#pill'); p.className='pill'+(m==='demo'?' demo':m==='off'?' off':'');
+  $('#pillTxt').textContent=m==='demo'?'Demonstração':m==='off'?'Reconectando':'Ao vivo';
+}
+function loop(){
+  const left=Math.max(0,next-Date.now()), T=CONFIG.intervalo*1000;
+  $('#rfg').style.strokeDashoffset=106.8*(1-left/T);
+  $('#rsec').textContent=Math.ceil(left/1000);
+  const now=new Date(); $('#clock').textContent=now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  if(left<=0){ next=Infinity; refresh(); }
+  requestAnimationFrame(loop);
+}
+// atualiza o "há X min" do feed entre uma busca e outra
+setInterval(()=>{ if(DATA.length) document.querySelectorAll('#feed .when').forEach((el,i)=>{const r=[...DATA].sort((a,b)=>b.ts-a.ts)[i]; if(r) el.textContent=el.textContent.replace(/^[^·]+/,ago(r.ts)+' ')}) },20000);
+
+/* ===================== QR CODE ===================== */
+function drawQR(){
+  $('#qrUrl').textContent=CONFIG.quizUrl.replace(/^https?:\/\//,'');
+  if(typeof qrcode!=='function'){$('#qr').innerHTML='<div class="empty" style="color:#15171C">QR indisponível</div>';return}
+  const q=qrcode(0,'M'); q.addData(CONFIG.quizUrl); q.make();
+  const n=q.getModuleCount(); let d='';
+  const finder=(r,c)=>(r<7&&c<7)||(r<7&&c>=n-7)||(r>=n-7&&c<7);
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++) if(q.isDark(r,c)&&!finder(r,c)) d+=`<rect x="${c+.08}" y="${r+.08}" width=".84" height=".84" rx=".28"/>`;
+  const eye=(x,y)=>`<rect x="${x+.5}" y="${y+.5}" width="6" height="6" rx="1.6" fill="none" stroke="#15171C" stroke-width="1"/><rect x="${x+2}" y="${y+2}" width="3" height="3" rx=".8" fill="#EC3A3A"/>`;
+  $('#qr').innerHTML=`<svg viewBox="0 0 ${n} ${n}" shape-rendering="geometricPrecision"><g fill="#15171C">${d}</g>${eye(0,0)}${eye(n-7,0)}${eye(0,n-7)}</svg>`;
+}
+
+/* ===================== CONFETE ===================== */
+const cv=$('#fx'),cx=cv.getContext('2d');let parts=[],fxOn=false;
+function sizeCv(){const d=devicePixelRatio||1;cv.width=innerWidth*d;cv.height=innerHeight*d;cx.setTransform(d,0,0,d,0,0)}
+addEventListener('resize',sizeCv);sizeCv();
+function confetti(n){
+  const P=['#0EA765','#EC3A3A','#FFD43B','#3557F5','#7B5CFF','#FF6B3D'];
+  for(let i=0;i<n;i++)parts.push({x:innerWidth*(.2+Math.random()*.6),y:-20-Math.random()*100,vx:(Math.random()-.5)*10,vy:Math.random()*3+2,s:Math.random()*10+6,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:P[Math.random()*P.length|0]});
+  if(fxOn)return;fxOn=true;
+  const step=()=>{cx.clearRect(0,0,innerWidth,innerHeight);
+    parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.2;p.vx*=.99;p.r+=p.vr;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);cx.restore()});
+    parts=parts.filter(p=>p.y<innerHeight+30);
+    if(parts.length)requestAnimationFrame(step);else{fxOn=false;cx.clearRect(0,0,innerWidth,innerHeight)}};
+  requestAnimationFrame(step);
+}
+
+/* ===================== INÍCIO ===================== */
+$('#hGroup').textContent=CONFIG.grupo;
+$('#hSchool').textContent=`${CONFIG.turma} · ${CONFIG.escola} · Sofia, Karolline, Letícia, Lara, Arthur e Esther`;
+const tk=DICAS.map(d=>`<span>${esc(d)}</span>`).join(''); $('#ticker').innerHTML=tk+tk;
+drawQR();
+refresh().then(()=>requestAnimationFrame(loop));
+</script>
+</body>
+</html>
