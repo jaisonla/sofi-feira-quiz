@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Admin — Real ou Fake?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Newsreader:ital,opsz,wght@1,6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F2EC;--ink:#15171C;--muted:#6B6F78;--line:#E6E1D7;--real:#0EA765;--fake:#EC3A3A;--fake-s:#FDE4E2;--hl:#FFD43B;--blue:#3557F5;--spring:cubic-bezier(.2,1.25,.3,1)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"DM Sans",system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;
+  background-image:radial-gradient(rgba(21,23,28,.07) 1px,transparent 1.3px);background-size:22px 22px}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:900px;margin:0 auto;padding:28px 18px 60px}
+.brand{font-family:"Bricolage Grotesque";font-weight:800;font-size:30px;letter-spacing:-.03em;display:flex;align-items:baseline;gap:6px}
+.brand .r{color:var(--real)}.brand .f{color:var(--fake)}.brand .ou{font-family:"Newsreader";font-style:italic;font-size:.55em}
+.brand small{font-family:"DM Sans";font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:#fff;padding:4px 9px;border-radius:99px;margin-left:8px;align-self:center}
+.card{background:#fff;border-radius:20px;box-shadow:0 20px 40px -28px rgba(30,20,0,.45),0 0 0 1px rgba(0,0,0,.04);padding:22px;animation:rise .6s var(--spring) both}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-weight:700;cursor:pointer;background:var(--ink);color:#fff;transition:transform .15s}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
+.btn.red{background:var(--fake)}
+.btn[disabled]{opacity:.4;pointer-events:none}
+input[type=text],input[type=password],select{width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:#fff;outline:none}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(53,87,245,.15)}
+
+/* login */
+#login{max-width:380px;margin:12vh auto 0;display:grid;gap:14px;text-align:center}
+#login h1{font-family:"Bricolage Grotesque";font-size:24px}
+#login p{color:var(--muted);font-size:14px}
+.msg{font-size:13px;color:var(--fake);min-height:18px}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+
+/* painel */
+#app{display:none}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.top .sp{flex:1}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px}
+.stat{background:#fff;border-radius:16px;padding:14px;border:1.5px solid var(--line)}
+.stat b{display:block;font-family:"Bricolage Grotesque";font-size:28px;line-height:1}
+.stat span{font-size:12px;color:var(--muted)}
+.tools{display:grid;grid-template-columns:1fr 190px auto;gap:10px;margin-bottom:12px}
+.search{position:relative}
+.search input{padding-left:40px}
+.search::before{content:"🔎";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:15px}
+.count{font-size:13px;color:var(--muted);margin:4px 2px 10px}
+.list{display:grid;gap:8px}
+.row{display:grid;grid-template-columns:44px 36px 1fr auto auto auto;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:10px 12px;transition:opacity .3s,transform .3s}
+.row.gone{opacity:0;transform:translateX(40px)}
+.pos{font-family:"Bricolage Grotesque";font-weight:800;color:var(--muted);text-align:center}
+.av{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:13px}
+.nm{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.sc{font-family:"Bricolage Grotesque";font-weight:800;font-size:18px;text-align:right;min-width:60px}
+.hits{font-size:12px;color:var(--muted);min-width:56px;text-align:right}
+mark{background:var(--hl);border-radius:3px;padding:0 1px}
+.del{border:0;background:var(--fake-s);color:var(--fake);width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:16px}
+.confirm{display:flex;gap:6px;align-items:center;font-size:13px}
+.confirm button{border:0;border-radius:8px;padding:7px 10px;font-weight:700;cursor:pointer}
+.confirm .y{background:var(--fake);color:#fff}.confirm .n{background:#eee}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+.danger{margin-top:30px;border:1.5px dashed #F2B8B5;background:#FFF7F6}
+.danger h3{font-family:"Bricolage Grotesque";color:var(--fake);margin-bottom:6px}
+.danger p{font-size:14px;color:var(--muted);margin-bottom:12px}
+.danger .line{display:flex;gap:10px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,150%);background:var(--ink);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;transition:transform .5s var(--spring);z-index:9}
+.toast.show{transform:translate(-50%,0)}
+@media (max-width:640px){
+  .tools{grid-template-columns:1fr 1fr}.tools .search{grid-column:1/-1}
+  .row{grid-template-columns:34px 1fr auto auto;gap:8px}.row .av,.row .hits{display:none}
+  .stats{grid-template-columns:1fr 1fr 1fr}.stat b{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="r">REAL</span><span class="ou">ou</span><span class="f">FAKE?</span><small>admin</small></div>
+
+  <form class="card" id="login">
+    <h1>Área do grupo 🔐</h1>
+    <p>Digite a senha de administrador para ver e editar o ranking.</p>
+    <input type="password" id="pw" placeholder="Senha" autocomplete="current-password">
+    <button class="btn" id="enter">Entrar</button>
+    <div class="msg" id="loginMsg"></div>
+  </form>
+
+  <div id="app">
+    <div class="top">
+      <span class="sp"></span>
+      <button class="btn ghost" id="reload">↻ Atualizar</button>
+      <button class="btn ghost" id="logout">Sair</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="sTotal">0</b><span>jogadores</span></div>
+      <div class="stat"><b id="sBest">0</b><span>recorde</span></div>
+      <div class="stat"><b id="sAvg">0</b><span>média</span></div>
+    </div>
+    <div class="tools">
+      <div class="search"><input type="text" id="q" placeholder="Buscar por nome…" autocomplete="off"></div>
+      <select id="sort">
+        <option value="score">Maior pontuação</option>
+        <option value="recent">Mais recentes</option>
+        <option value="name">Nome (A–Z)</option>
+      </select>
+      <span></span>
+    </div>
+    <div class="count" id="count"></div>
+    <div class="list" id="list"></div>
+
+    <div class="card danger">
+      <h3>Zerar ranking</h3>
+      <p>Apaga todas as partidas. Use antes da feira para tirar os testes. Não dá para desfazer.</p>
+      <div class="line"><input type="text" id="resetTxt" placeholder='Digite ZERAR para liberar'><button class="btn red" id="resetBtn" disabled>Apagar tudo</button></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA={url:"https://yqubjyoeycxxslofbbhz.supabase.co",key:"sb_publishable_uEhPb7JlwLchh8_fFRlGww_WenKIwUb"};
+const H={apikey:SUPA.key,'Content-Type':'application/json'};
+const $=s=>document.querySelector(s);
+const COLORS=['#3557F5','#0EA765','#EC3A3A','#F2A900','#7B5CFF','#FF6B3D','#0FA3B1','#D6338C'];
+const colorFor=s=>COLORS[[...String(s)].reduce((a,c)=>a+c.charCodeAt(0),0)%COLORS.length];
+const initials=s=>String(s).trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase()||'?';
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>String(s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const fmtDate=d=>new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+let PW='', DATA=[];
+
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),2800)}
+async function rpc(fn,body){
+  const r=await fetch(`${SUPA.url}/rest/v1/rpc/${fn}`,{method:'POST',headers:H,body:JSON.stringify(body)});
+  const txt=await r.text(); let j; try{j=JSON.parse(txt)}catch(e){j=txt}
+  if(!r.ok) throw new Error((j&&j.message)||('erro '+r.status));
+  return j;
+}
+
+/* login */
+$('#login').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const pw=$('#pw').value; $('#enter').disabled=true; $('#loginMsg').textContent='';
+  try{
+    const ok=await rpc('admin_check',{p_senha:pw});
+    if(ok===true){ PW=pw; try{sessionStorage.setItem('rf_admin',pw)}catch(e){} openApp(); }
+    else{ $('#loginMsg').textContent='Senha incorreta.'; $('#login').classList.remove('shake'); void $('#login').offsetWidth; $('#login').classList.add('shake'); }
+  }catch(err){ $('#loginMsg').textContent='Não consegui falar com o banco: '+err.message }
+  $('#enter').disabled=false;
+});
+$('#logout').onclick=()=>{try{sessionStorage.removeItem('rf_admin')}catch(e){} location.reload()};
+
+async function openApp(){ $('#login').style.display='none'; $('#app').style.display='block'; await load(); }
+
+/* dados */
+async function load(){
+  $('#list').innerHTML='<div class="empty">Carregando…</div>';
+  try{
+    const r=await fetch(`${SUPA.url}/rest/v1/ranking?select=id,name,score,hits,created_at&order=score.desc,created_at.asc&limit=10000`,{headers:{apikey:SUPA.key},cache:'no-store'});
+    if(!r.ok) throw new Error((await r.json()).message||r.status);
+    DATA=await r.json();
+    DATA.forEach((d,i)=>d.pos=i+1);
+    render();
+  }catch(err){ $('#list').innerHTML=`<div class="empty">Erro ao carregar: ${esc(err.message)}</div>` }
+}
+function render(){
+  const q=norm($('#q').value.trim()), sort=$('#sort').value;
+  let rows=DATA.filter(d=>!q||norm(d.name).includes(q));
+  if(sort==='recent') rows=[...rows].sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));
+  if(sort==='name') rows=[...rows].sort((a,b)=>a.name.localeCompare(b.name,'pt-BR'));
+  const total=DATA.length, best=DATA[0]?.score||0, avg=total?Math.round(DATA.reduce((a,d)=>a+d.score,0)/total):0;
+  $('#sTotal').textContent=total; $('#sBest').textContent=best.toLocaleString('pt-BR'); $('#sAvg').textContent=avg.toLocaleString('pt-BR');
+  $('#count').textContent=q?`${rows.length} de ${total} jogadores com “${$('#q').value.trim()}”`:`${total} jogadores`;
+  const hl=name=>{ if(!q) return esc(name); const i=norm(name).indexOf(q); return i<0?esc(name):esc(name.slice(0,i))+'<mark>'+esc(name.slice(i,i+q.length))+'</mark>'+esc(name.slice(i+q.length)) };
+  $('#list').innerHTML=rows.length?rows.map(d=>`
+    <div class="row" data-id="${d.id}">
+      <span class="pos">${d.pos}º</span>
+      <span class="av" style="background:${colorFor(d.name)}">${esc(initials(d.name))}</span>
+      <span class="nm">${hl(d.name)}<small>${fmtDate(d.created_at)}</small></span>
+      <span class="hits">${d.hits!=null?d.hits+'/8 acertos':''}</span>
+      <span class="sc">${d.score.toLocaleString('pt-BR')}</span>
+      <span class="act"><button class="del" title="Apagar" data-del="${d.id}">🗑</button></span>
+    </div>`).join(''):'<div class="empty">Ninguém encontrado.</div>';
+}
+$('#q').addEventListener('input',render);
+$('#sort').addEventListener('change',render);
+$('#reload').onclick=load;
+
+/* apagar um */
+$('#list').addEventListener('click',async e=>{
+  const del=e.target.closest('[data-del]'), yes=e.target.closest('.y'), no=e.target.closest('.n');
+  if(del){ const act=del.parentElement; const d=DATA.find(x=>x.id==del.dataset.del);
+    act.innerHTML=`<span class="confirm">Apagar ${esc(d.name)}? <button class="y" data-id="${d.id}">Sim</button><button class="n">Não</button></span>`; return; }
+  if(no){ render(); return; }
+  if(yes){
+    const id=+yes.dataset.id, row=yes.closest('.row'); yes.disabled=true;
+    try{
+      await rpc('admin_delete',{p_id:id,p_senha:PW});
+      row.classList.add('gone');
+      const d=DATA.find(x=>x.id===id);
+      setTimeout(()=>{DATA=DATA.filter(x=>x.id!==id);DATA.forEach((x,i)=>x.pos=i+1);render()},300);
+      toast(`${d?d.name:'Registro'} apagado`);
+    }catch(err){ toast('Erro: '+err.message); render(); }
+  }
+});
+
+/* zerar */
+$('#resetTxt').addEventListener('input',e=>{$('#resetBtn').disabled=e.target.value.trim().toUpperCase()!=='ZERAR'});
+$('#resetBtn').onclick=async()=>{
+  $('#resetBtn').disabled=true;
+  try{ const n=await rpc('admin_reset',{p_senha:PW}); toast(`${n} partidas apagadas`); $('#resetTxt').value=''; await load(); }
+  catch(err){ toast('Erro: '+err.message) }
+};
+
+/* sessão lembrada nesta aba */
+try{ const s=sessionStorage.getItem('rf_admin'); if(s){ rpc('admin_check',{p_senha:s}).then(ok=>{ if(ok===true){PW=s;openApp()} }).catch(()=>{}) } }catch(e){}
+</script>
+</body>
+</html>
