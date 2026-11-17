@@ -348,6 +348,8 @@ iframe{display:none!important}
 .btn-row{display:flex;gap:.6em;width:100%}
 .btn-row .btn{flex:1.4;width:auto;white-space:nowrap;font-size:1.1em;padding-left:.7em;padding-right:.7em}
 .btn-row .btn.ghost{flex:1}
+.btn-stack{display:grid;gap:.6em;width:100%}
+.btn-stack .btn-row .btn{font-size:1em;padding-top:.8em;padding-bottom:.8em}
 </style>
 </head>
 <body>
@@ -880,12 +882,12 @@ async function renderRanking(){
   let html=rest.map((r,i)=>rowHTML(r,i+4,i)).join('');
   const myPos=RANK.findIndex(isMe);
   if(myPos>=10) html+=`<div class="sep">• • •</div>`+rowHTML(RANK[myPos],myPos+1,rest.length+1);
-  if(!ONLINE) html+=`<div class="sep" style="letter-spacing:0">Sem internet agora — sua pontuação será enviada na próxima partida.</div>`;
-  if(!RANK.length) html=`<div class="sep" style="letter-spacing:0">Você é o primeiro do ranking! 🎉</div>`+html;
+  if(!ONLINE) html+=`<div class="sep" style="letter-spacing:0">${ME?'Sem internet agora — sua pontuação será enviada na próxima partida.':'Sem internet agora — não deu para carregar o ranking.'}</div>`;
+  if(!RANK.length&&ONLINE) html=`<div class="sep" style="letter-spacing:0">${ME?'Você é o primeiro do ranking! 🎉':'Ninguém jogou ainda. Seja o primeiro! 🚀'}</div>`+html;
   $('#rlist').innerHTML=html;
   $('#rankActions').innerHTML = ME
     ? `<button class="btn" onclick="go('s-team')">Conheça o grupo →</button>`
-    : `<button class="btn ghost" onclick="resetGame()">← Início</button><button class="btn" onclick="go('s-name')">Jogar agora →</button>`;
+    : `<div class="btn-stack"><div class="btn-row"><button class="btn ghost" onclick="resetGame()">← Início</button><button class="btn ghost" onclick="go('s-team')">👥 O grupo</button></div><button class="btn" onclick="go('s-name')">Jogar agora →</button></div>`;
   const meRow=$('#rlist .row.me'); if(meRow) setTimeout(()=>meRow.scrollIntoView({behavior:'smooth',block:'nearest'}),1400);
 }
 function rowHTML(r,pos,i){
