@@ -230,8 +230,8 @@ iframe{display:none!important}
 <div id="hand" aria-hidden="true">
   <svg viewBox="0 0 300 760">
     <!-- braço + manga -->
-    <path d="M118 470 C 112 560, 104 650, 96 790 L 236 790 C 230 660, 226 560, 224 470 Z" fill="#E2A47F"/>
-    <path d="M92 610 C 140 596, 200 596, 246 610 L 260 800 L 78 800 Z" fill="#3557F5"/>
+    <path d="M118 470 C 112 560, 104 650, 96 700 L 236 700 C 230 660, 226 560, 224 470 Z" fill="#E2A47F"/>
+    <path d="M92 610 C 140 596, 200 596, 246 610 L 300 1900 L 40 1900 Z" fill="#3557F5"/>
     <path d="M92 610 C 140 596, 200 596, 246 610 L 248 640 C 200 626, 140 626, 90 640 Z" fill="#2843C9"/>
     <!-- palma atrás do celular -->
     <path d="M70 300 C 60 380, 80 470, 120 500 C 160 528, 210 520, 236 486 C 262 452, 262 380, 250 300 Z" fill="#E2A47F"/>
@@ -476,7 +476,9 @@ function handLoop(){
   const rem=parseFloat(getComputedStyle(document.documentElement).fontSize);
   const r=box.getBoundingClientRect(), W=h.offsetWidth, H=h.offsetHeight;
   // o celular cobre parte do QR: centro do celular um pouco abaixo e à esquerda do centro do QR
-  const x=r.left+r.width*0.42-W/2, y=r.top+r.height*0.62-H*0.25;
+  const x=r.left+r.width*0.42-W/2;
+  // a mão sobe até o QR, mas o fim do desenho (manga) nunca fica acima do rodapé da tela
+  const y=Math.max(r.top+r.height*0.62-H*0.25, innerHeight-H*(1900/760)+6);
   h.style.left=x+'px'; h.style.top=y+'px';
   h.className='';
   const off=innerHeight-y+40;
