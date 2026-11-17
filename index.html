@@ -332,6 +332,13 @@ canvas#fx{position:absolute;inset:0;z-index:40;pointer-events:none;width:100%;he
 .flash.ok{animation:flash .6s}.flash.ok{background:radial-gradient(circle at 50% 60%,rgba(14,167,101,.35),transparent 70%)}
 .flash.no{animation:flash .6s;background:radial-gradient(circle at 50% 60%,rgba(236,58,58,.35),transparent 70%)}
 @keyframes flash{30%{opacity:1}}
+
+/* espaço para o selo "Powered by Netlify" no canto inferior */
+.app.has-badge{--badge:58px}
+@media (min-aspect-ratio:11/16){.app.has-badge{--badge:0px}}
+.app.has-badge .screen{padding-bottom:calc(6% + var(--badge))}
+.app.has-badge #s-quiz{padding-bottom:calc(5% + var(--badge))}
+.app.has-badge .sheet{padding-bottom:calc(6% + var(--badge))}
 </style>
 </head>
 <body>
@@ -931,6 +938,7 @@ $('#introChip').textContent=`${CONFIG.feira} · ${CONFIG.turma}`;
 $('#introGroup').textContent=CONFIG.grupo;
 $('#introSchool').textContent=`${CONFIG.turma} · ${CONFIG.escola}`;
 $('#rN').textContent=CONFIG.porRodada; $('#rT').textContent=CONFIG.tempo+'s';
+if(/netlify\.app$/.test(location.hostname)) $('#app').classList.add('has-badge');
 show('s-intro');
 </script>
 </body>
