@@ -34,6 +34,9 @@ button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 /* telas */
 .screen{position:absolute;inset:0;z-index:2;display:none;flex-direction:column;font-size:4.1cqw;padding:7% 6% 6%}
 .screen.active{display:flex}
+.screen{overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+#s-quiz{overflow:hidden}
 .screen.active [data-in]{animation:rise .75s var(--spring) both;animation-delay:calc(var(--d,0) * 90ms + 120ms)}
 @keyframes rise{from{opacity:0;transform:translateY(28px) scale(.96)}to{opacity:1;transform:none}}
 
@@ -294,18 +297,18 @@ mark.clue{color:inherit;background:linear-gradient(var(--hl),var(--hl)) no-repea
 .sep{text-align:center;color:var(--muted);font-size:.8em;letter-spacing:.3em}
 
 /* ===== EQUIPE ===== */
-#s-team{gap:1em;text-align:center;align-items:center}
-.team-name{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.5em;line-height:.95;letter-spacing:-.03em;background:linear-gradient(90deg,var(--real),var(--blue),var(--fake),var(--real));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 6s linear infinite}
+#s-team{gap:.8em;text-align:center;align-items:center}
+.team-name{font-family:"Bricolage Grotesque";font-weight:800;font-size:2.2em;line-height:.95;letter-spacing:-.03em;background:linear-gradient(90deg,var(--real),var(--blue),var(--fake),var(--real));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 6s linear infinite}
 @keyframes flow{to{background-position:300% 0}}
 .school{color:var(--muted);font-size:.9em}
 .members{display:grid;grid-template-columns:1fr 1fr;gap:.6em;width:100%}
-.mem{background:#fff;border:1.5px solid var(--line);border-radius:1em;padding:.8em .5em;display:flex;flex-direction:column;align-items:center;gap:.4em;animation:popCard .7s var(--spring) both}
+.mem{background:#fff;border:1.5px solid var(--line);border-radius:1em;padding:.55em .6em;display:flex;flex-direction:row;align-items:center;gap:.55em;text-align:left;min-width:0;animation:popCard .7s var(--spring) both}
 @keyframes popCard{from{opacity:0;transform:scale(.6) rotate(-6deg)}}
-.mem .av{width:2.6em;height:2.6em;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:"Bricolage Grotesque";font-weight:800}
-.mem span{font-weight:700;font-size:.85em}
+.mem .av{flex-shrink:0;font-size:.85em;width:2.4em;height:2.4em;border-radius:50%;display:grid;place-items:center;color:#fff;font-family:"Bricolage Grotesque";font-weight:800}
+.mem span{font-weight:700;font-size:.82em;line-height:1.2}
 .mem.prof{grid-column:1/-1;flex-direction:row;justify-content:center;background:#F0EDFF;border-color:#DCD4FF}
 .mem.prof small{color:var(--muted);font-weight:500;font-size:.85em}
-.manifesto{background:var(--ink);color:#fff;border-radius:1.1em;padding:1em;width:100%;text-align:left;display:grid;gap:.5em;font-size:.86em}
+.manifesto{background:var(--ink);color:#fff;border-radius:1.1em;padding:.8em .9em;width:100%;text-align:left;display:grid;gap:.5em;font-size:.86em}
 .manifesto b{font-family:"Bricolage Grotesque";font-size:1.15em}
 .manifesto ol{display:flex;gap:.5em;list-style:none}
 .manifesto li{flex:1;background:rgba(255,255,255,.1);border-radius:.7em;padding:.55em .4em;text-align:center;font-size:.85em;line-height:1.2}
