@@ -334,7 +334,7 @@ canvas#fx{position:absolute;inset:0;z-index:40;pointer-events:none;width:100%;he
 @keyframes flash{30%{opacity:1}}
 
 /* espaço para o selo "Powered by Netlify" no canto inferior */
-.app.has-badge{--badge:58px}
+.app.has-badge{--badge:30px}
 @media (min-aspect-ratio:11/16){.app.has-badge{--badge:0px}}
 .app.has-badge .screen{padding-bottom:calc(6% + var(--badge))}
 .app.has-badge #s-quiz{padding-bottom:calc(5% + var(--badge))}
@@ -342,6 +342,9 @@ canvas#fx{position:absolute;inset:0;z-index:40;pointer-events:none;width:100%;he
 
 /* esconde o selo "Powered by Netlify" */
 iframe{display:none!important}
+.btn-row{display:flex;gap:.6em;width:100%}
+.btn-row .btn{flex:1.4;width:auto;white-space:nowrap;font-size:1.1em;padding-left:.7em;padding-right:.7em}
+.btn-row .btn.ghost{flex:1}
 </style>
 </head>
 <body>
@@ -361,7 +364,7 @@ iframe{display:none!important}
       <p class="sub" data-in style="--d:5">Notícias desta semana. Algumas são reais, outras foram distorcidas. Você consegue separar?</p>
     </div>
     <div class="intro-bottom">
-      <button class="btn" data-in style="--d:6" onclick="go('s-name')">Jogar agora →</button>
+      <div class="btn-row" data-in style="--d:6"><button class="btn ghost" id="introRank" onclick="go('s-rank')">🏆 Ranking</button><button class="btn" onclick="go('s-name')">Jogar agora →</button></div>
       <div class="byline" data-in style="--d:7">Um projeto do <b id="introGroup"></b> · <span id="introSchool"></span></div>
     </div>
   </section>
@@ -436,7 +439,7 @@ iframe{display:none!important}
     <div class="rank-head" data-in style="--d:0"><div><div class="kicker">Ao vivo no estande</div><h2>Ranking</h2></div><span class="chip" id="rankCount">0 jogadores</span></div>
     <div class="podium" id="podium"></div>
     <div class="rlist" id="rlist"></div>
-    <button class="btn" data-in style="--d:3" onclick="go('s-team')">Conheça o grupo →</button>
+    <div class="btn-row" data-in style="--d:3" id="rankActions"></div>
   </section>
 
   <!-- EQUIPE -->
@@ -450,7 +453,7 @@ iframe{display:none!important}
       <ol><li><i>⏸️</i>Pare e respire</li><li><i>🔎</i>Procure a fonte</li><li><i>📅</i>Confira a data</li></ol>
     </div>
     <div class="spacer"></div>
-    <button class="btn" data-in style="--d:9" onclick="resetGame()">Jogar de novo ↺</button>
+    <div class="btn-row" data-in style="--d:9"><button class="btn ghost" onclick="go('s-rank')">🏆 Ranking</button><button class="btn" onclick="resetGame()">Jogar de novo ↺</button></div>
     <div class="idle" id="idle"></div>
   </section>
 
@@ -600,7 +603,7 @@ function go(id){
   setTimeout(()=>{ w.className='wipe'; wiping=false; },1150);
 }
 const onEnter = {
-  's-intro':()=>{splitTitle()},
+  's-intro':()=>{splitTitle(); $('#introRank').style.display=jaJogou()?'':'none'},
   's-name':()=>{setTimeout(()=>$('#nameInput').focus(),700)},
   's-result':renderResult,
   's-rank':renderRanking,
@@ -824,7 +827,10 @@ async function saveResult(entry){
     RANK=[...RANK.filter(r=>!(r.ts===entry.ts&&r.name===entry.name)),entry].sort(byScore);
   }
 }
+const K_JOGOU='rf_ja_jogou';
+const jaJogou=()=>{try{return localStorage.getItem(K_JOGOU)==='1'}catch(e){return false}};
 function finish(){
+  try{localStorage.setItem(K_JOGOU,'1')}catch(e){}
   const entry={name:S.name,score:S.score,hits:S.results.filter(r=>r.ok).length,ts:Date.now()};
   ME=entry;
   S.saving=saveResult(entry);
@@ -874,6 +880,9 @@ async function renderRanking(){
   if(!ONLINE) html+=`<div class="sep" style="letter-spacing:0">Sem internet agora — sua pontuação será enviada na próxima partida.</div>`;
   if(!RANK.length) html=`<div class="sep" style="letter-spacing:0">Você é o primeiro do ranking! 🎉</div>`+html;
   $('#rlist').innerHTML=html;
+  $('#rankActions').innerHTML = ME
+    ? `<button class="btn" onclick="go('s-team')">Conheça o grupo →</button>`
+    : `<button class="btn ghost" onclick="resetGame()">← Início</button><button class="btn" onclick="go('s-name')">Jogar agora →</button>`;
   const meRow=$('#rlist .row.me'); if(meRow) setTimeout(()=>meRow.scrollIntoView({behavior:'smooth',block:'nearest'}),1400);
 }
 function rowHTML(r,pos,i){
